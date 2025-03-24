@@ -181,6 +181,14 @@ npm run test:integration
 # Generate test coverage report
 npm run test:coverage
 ```
+## API Testing with Postman
+
+This repository includes a Postman collection for testing all API endpoints.
+
+### Instructions:
+1. Import the `book-REST-API.postman_collection.json` file into Postman
+2. Update the environment variables with your specific configuration (local or deployed)
+3. Use the collection to test all available endpoints
 
 ## Continuous Integration
 
