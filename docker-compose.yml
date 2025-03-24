@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # API service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_HOST=db
+      - DB_USER=bookuser
+      - DB_PASS=bookpassword
+      - DB_NAME=bookmanagement
+      - DB_PORT=3306
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - book-network
+    restart: unless-stopped
+
+  # MySQL database service
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=bookmanagement
+      - MYSQL_USER=bookuser
+      - MYSQL_PASSWORD=bookpassword
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - book-network
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+networks:
+  book-network:
+    driver: bridge
+
+volumes:
+  db-data:
